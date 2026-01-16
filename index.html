@@ -242,6 +242,18 @@
       position: relative;
     }
 
+    /* Progress Bar */
+    .progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 10px;
+      background: linear-gradient(90deg, var(--accent) 0%, #6dd669 100%);
+      transition: width 0.3s ease;
+      z-index: 200;
+      box-shadow: 0 2px 8px rgba(76, 184, 72, 0.5);
+    }
+
     /* Branding Logo (appears on all slides) */
     .branding-logo {
       position: absolute;
@@ -262,7 +274,7 @@
       width: 100%;
       height: 100%;
       padding: 4rem 5rem;
-      animation: fadeIn 0.4s ease;
+      animation: slideIn 0.5s ease-out;
     }
 
     .slide.active {
@@ -270,9 +282,101 @@
       flex-direction: column;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Staggered content animations */
+    .slide.active h2 {
+      animation: fadeUp 0.5s ease-out both;
+    }
+
+    .slide.active .card,
+    .slide.active .c-card,
+    .slide.active .takeaway-item,
+    .slide.active .smart-row,
+    .slide.active .principle-item,
+    .slide.active .area-card {
+      animation: fadeUp 0.5s ease-out both;
+    }
+
+    .slide.active .card:nth-child(1),
+    .slide.active .c-card:nth-child(1),
+    .slide.active .takeaway-item:nth-child(1),
+    .slide.active .smart-row:nth-child(1),
+    .slide.active .principle-item:nth-child(1),
+    .slide.active .area-card:nth-child(1) { animation-delay: 0.1s; }
+
+    .slide.active .card:nth-child(2),
+    .slide.active .c-card:nth-child(2),
+    .slide.active .takeaway-item:nth-child(2),
+    .slide.active .smart-row:nth-child(2),
+    .slide.active .principle-item:nth-child(2),
+    .slide.active .area-card:nth-child(2) { animation-delay: 0.2s; }
+
+    .slide.active .card:nth-child(3),
+    .slide.active .c-card:nth-child(3),
+    .slide.active .takeaway-item:nth-child(3),
+    .slide.active .smart-row:nth-child(3),
+    .slide.active .principle-item:nth-child(3),
+    .slide.active .area-card:nth-child(3) { animation-delay: 0.3s; }
+
+    .slide.active .card:nth-child(4),
+    .slide.active .c-card:nth-child(4),
+    .slide.active .takeaway-item:nth-child(4),
+    .slide.active .smart-row:nth-child(4),
+    .slide.active .principle-item:nth-child(4) { animation-delay: 0.4s; }
+
+    .slide.active .card:nth-child(5),
+    .slide.active .c-card:nth-child(5),
+    .slide.active .takeaway-item:nth-child(5),
+    .slide.active .smart-row:nth-child(5),
+    .slide.active .principle-item:nth-child(5) { animation-delay: 0.5s; }
+
+    .slide.active .card:nth-child(6),
+    .slide.active .takeaway-item:nth-child(6),
+    .slide.active .principle-item:nth-child(6) { animation-delay: 0.6s; }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Card hover effects */
+    .card,
+    .c-card,
+    .area-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover,
+    .c-card:hover,
+    .area-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    /* Button hover enhancements */
+    .download-btn {
+      transition: all 0.3s ease;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 20px rgba(76, 184, 72, 0.4);
     }
 
     /* Title Slide */
@@ -281,6 +385,56 @@
       align-items: center;
       text-align: center;
       background: linear-gradient(135deg, var(--primary) 0%, #1E4A7D 100%);
+      overflow: hidden;
+    }
+
+    .slide-title.active .logo {
+      animation: dropIn 0.8s ease-out both;
+    }
+
+    .slide-title.active h1 {
+      animation: zoomIn 0.8s ease-out 0.3s both;
+    }
+
+    .slide-title.active .divider {
+      animation: expandWidth 0.6s ease-out 0.7s both;
+    }
+
+    .slide-title.active .subtitle {
+      animation: fadeUp 0.8s ease-out 1s both;
+    }
+
+    @keyframes dropIn {
+      from {
+        opacity: 0;
+        transform: translateY(-100px) scale(0.5);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes zoomIn {
+      from {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes expandWidth {
+      from {
+        width: 0;
+        opacity: 0;
+      }
+      to {
+        width: 120px;
+        opacity: 1;
+      }
     }
 
     .slide-title h1 {
@@ -334,11 +488,23 @@
     .slide .highlight {
       color: var(--primary);
       font-weight: 700;
+      animation: pulse 2s ease-in-out infinite;
     }
 
     .slide .accent {
       color: var(--accent);
       font-weight: 700;
+      animation: pulseGreen 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; text-shadow: 0 0 0 transparent; }
+      50% { opacity: 0.8; text-shadow: 0 0 10px rgba(45, 109, 181, 0.5); }
+    }
+
+    @keyframes pulseGreen {
+      0%, 100% { opacity: 1; text-shadow: 0 0 0 transparent; }
+      50% { opacity: 0.8; text-shadow: 0 0 10px rgba(76, 184, 72, 0.5); }
     }
 
     /* Comparison Layout */
@@ -438,38 +604,90 @@
 
     .c-card {
       flex: 1;
-      background: var(--primary);
+      perspective: 1000px;
+      cursor: pointer;
+      height: 200px;
+      min-width: 160px;
+    }
+
+    .c-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .c-card:hover .c-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .c-card-front, .c-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
       border-radius: 16px;
-      padding: 2rem;
+      padding: 1rem;
       text-align: center;
       color: var(--light);
       display: flex;
       flex-direction: column;
       align-items: center;
-      height: 100%;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .c-card-front {
+      background: var(--primary);
+    }
+
+    .c-card-back {
+      background: var(--accent);
+      transform: rotateY(180deg);
+    }
+
+    .c-card-back p {
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin: 0;
     }
 
     .c-circle {
-      width: 70px;
-      height: 70px;
+      width: 50px;
+      height: 50px;
       background: var(--accent);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
+      font-size: 1.75rem;
       font-weight: 700;
       color: var(--light);
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .c-card-back .c-circle {
+      background: var(--primary);
+      width: 40px;
+      height: 40px;
+      font-size: 1.5rem;
+      margin-bottom: 0.4rem;
     }
 
     .c-card h4 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
     }
 
-    .c-card p {
-      font-size: 1.1rem;
+    .c-card-back h4 {
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .c-card-front p {
+      font-size: 0.85rem;
       color: rgba(255,255,255,0.8);
     }
 
@@ -696,6 +914,18 @@
       max-width: 900px;
     }
 
+    /* Typing effect for quotes */
+    .big-statement.active h2 .typewriter {
+      display: inline;
+      border-right: 3px solid var(--primary);
+      animation: blink 0.7s step-end infinite;
+    }
+
+    @keyframes blink {
+      from, to { border-color: transparent; }
+      50% { border-color: var(--primary); }
+    }
+
     .big-statement .icon-row {
       display: flex;
       gap: 3rem;
@@ -739,7 +969,20 @@
       font-weight: 700;
       color: var(--light);
       flex-shrink: 0;
+      transform: scale(0);
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
+
+    .slide.active .takeaway-num {
+      transform: scale(1);
+    }
+
+    .slide.active .takeaway-item:nth-child(1) .takeaway-num { transition-delay: 0.2s; }
+    .slide.active .takeaway-item:nth-child(2) .takeaway-num { transition-delay: 0.4s; }
+    .slide.active .takeaway-item:nth-child(3) .takeaway-num { transition-delay: 0.6s; }
+    .slide.active .takeaway-item:nth-child(4) .takeaway-num { transition-delay: 0.8s; }
+    .slide.active .takeaway-item:nth-child(5) .takeaway-num { transition-delay: 1.0s; }
+    .slide.active .takeaway-item:nth-child(6) .takeaway-num { transition-delay: 1.2s; }
 
     .takeaway-num.alt {
       background: var(--primary);
@@ -755,6 +998,53 @@
       align-items: center;
       text-align: center;
       background: linear-gradient(135deg, var(--primary) 0%, #1E4A7D 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide-closing.active .closing-box {
+      animation: celebrateIn 0.8s ease-out both;
+    }
+
+    @keyframes celebrateIn {
+      from {
+        opacity: 0;
+        transform: scale(0.5) rotate(-5deg);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+
+    /* Confetti */
+    .confetti-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      animation: confettiFall 4s ease-in-out forwards;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
     }
 
     .closing-box {
@@ -762,6 +1052,8 @@
       padding: 4rem 5rem;
       border-radius: 20px;
       max-width: 800px;
+      position: relative;
+      z-index: 10;
     }
 
     .closing-box p {
@@ -825,6 +1117,56 @@
       align-items: center;
       text-align: center;
       background: var(--primary);
+      overflow: hidden;
+    }
+
+    .slide-section.active {
+      animation: sectionSlideIn 0.6s ease-out;
+    }
+
+    .slide-section.active .chapter-label {
+      animation: fadeDown 0.5s ease-out 0.2s both;
+    }
+
+    .slide-section.active h2 {
+      animation: scaleIn 0.6s ease-out 0.4s both;
+    }
+
+    .slide-section.active .divider {
+      animation: expandWidth 0.5s ease-out 0.7s both;
+    }
+
+    @keyframes sectionSlideIn {
+      from {
+        opacity: 0;
+        background: var(--dark);
+      }
+      to {
+        opacity: 1;
+        background: var(--primary);
+      }
+    }
+
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     .slide-section .chapter-label {
@@ -1073,31 +1415,72 @@
       <!-- Slide 11: 5 Cs -->
       <section class="slide" data-chapter="4">
         <h2>The 5 Cs of Accountability</h2>
+        <p style="color: var(--gray); font-size: 1rem; margin-top: -1.5rem; margin-bottom: 1.5rem;">Hover over each card to learn more</p>
         <div class="five-cs">
           <div class="c-card">
-            <div class="c-circle">C</div>
-            <h4>Clarity</h4>
-            <p>Setting clear, specific, understandable goals and expectations</p>
+            <div class="c-card-inner">
+              <div class="c-card-front">
+                <div class="c-circle">C</div>
+                <h4>Clarity</h4>
+              </div>
+              <div class="c-card-back">
+                <div class="c-circle">C</div>
+                <h4>Clarity</h4>
+                <p>Set clear goals so everyone knows what success looks like.</p>
+              </div>
+            </div>
           </div>
           <div class="c-card">
-            <div class="c-circle">C</div>
-            <h4>Commitment</h4>
-            <p>Getting genuinely invested in your responsibilities</p>
+            <div class="c-card-inner">
+              <div class="c-card-front">
+                <div class="c-circle">C</div>
+                <h4>Commitment</h4>
+              </div>
+              <div class="c-card-back">
+                <div class="c-circle">C</div>
+                <h4>Commitment</h4>
+                <p>Be genuinely invested and follow through on promises.</p>
+              </div>
+            </div>
           </div>
           <div class="c-card">
-            <div class="c-circle">C</div>
-            <h4>Communication</h4>
-            <p>Sharing expectations, progress, and feedback openly</p>
+            <div class="c-card-inner">
+              <div class="c-card-front">
+                <div class="c-circle">C</div>
+                <h4>Communication</h4>
+              </div>
+              <div class="c-card-back">
+                <div class="c-circle">C</div>
+                <h4>Communication</h4>
+                <p>Share expectations and feedback openly.</p>
+              </div>
+            </div>
           </div>
           <div class="c-card">
-            <div class="c-circle">C</div>
-            <h4>Collaboration</h4>
-            <p>Working together; sharing accountability for outcomes</p>
+            <div class="c-card-inner">
+              <div class="c-card-front">
+                <div class="c-circle">C</div>
+                <h4>Collaboration</h4>
+              </div>
+              <div class="c-card-back">
+                <div class="c-circle">C</div>
+                <h4>Collaboration</h4>
+                <p>Work together and share accountability.</p>
+              </div>
+            </div>
           </div>
           <div class="c-card">
-            <div class="c-circle">C</div>
-            <h4>Consequences</h4>
-            <p>Recognizing actions have outcomes; follow-through matters</p>
+            <div class="c-card-inner">
+              <div class="c-card-front">
+                <div class="c-circle">C</div>
+                <h4>Consequences</h4>
+              </div>
+              <div class="c-card-back">
+                <div class="c-circle">C</div>
+                <h4>Consequences</h4>
+                <p>Actions have outcomes; follow-through matters.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1196,7 +1579,9 @@
 
       <!-- Slide 16: Key Question -->
       <section class="slide big-statement" data-chapter="6">
-        <h2>Not "how do I avoid it?"<br>but <span class="accent">"how fast can I get out?"</span></h2>
+        <p style="font-size: 1.5rem; color: var(--gray); margin-bottom: 2rem;">When facing a difficult situation, accountable people ask:</p>
+        <h2>Not "how do I <span class="highlight">avoid</span> it?"<br>but <span class="accent">"how fast can I get through it?"</span></h2>
+        <p style="font-size: 1.25rem; color: var(--gray); margin-top: 2rem;">Accountable people face challenges head-on instead of running away.</p>
       </section>
 
       <!-- Slide 17: Section - Workplace -->
@@ -1388,8 +1773,10 @@
       </section>
 
       <!-- Slide 22: Closing -->
-      <section class="slide slide-closing" data-chapter="9">
+      <section class="slide slide-closing" data-chapter="9" id="closingSlide">
+        <div class="confetti-container" id="confettiContainer"></div>
         <div class="closing-box">
+          <h3 style="color: var(--accent); font-size: 1.5rem; margin-bottom: 1.5rem;">Congratulations, you have completed this lesson!</h3>
           <p>"When you're personally accountable, you take ownership of what happens as a result of your choices and actions."</p>
           <div class="divider"></div>
           <h2>Own Your Success</h2>
@@ -1405,6 +1792,10 @@
 
       <!-- Branding Logo -->
       <img src="SPOKES-Logo.png" alt="SPOKES" class="branding-logo">
+
+      <!-- Progress Bar -->
+      <div class="progress-bar" id="progressBar"></div>
+
     </main>
   </div>
 
@@ -1414,9 +1805,47 @@
     const chapterListEl = document.getElementById('chapterList');
     const currentSlideEl = document.getElementById('currentSlide');
     const totalSlidesEl = document.getElementById('totalSlides');
+    const progressBar = document.getElementById('progressBar');
 
     let currentIndex = 0;
+    let soundEnabled = true;
     totalSlidesEl.textContent = slides.length;
+
+    // Sound effects using Web Audio API
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playClickSound() {
+      if (!soundEnabled) return;
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+      oscillator.start(audioCtx.currentTime);
+      oscillator.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function playSuccessSound() {
+      if (!soundEnabled) return;
+      const notes = [523, 659, 784]; // C, E, G
+      notes.forEach((freq, i) => {
+        setTimeout(() => {
+          const oscillator = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          oscillator.frequency.value = freq;
+          oscillator.type = 'sine';
+          gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 0.3);
+        }, i * 150);
+      });
+    }
 
     // Chapter names mapping
     const chapterNames = {
@@ -1540,6 +1969,37 @@
 
       // Update counter
       currentSlideEl.textContent = index + 1;
+
+      // Update progress bar
+      const progress = ((index + 1) / slides.length) * 100;
+      progressBar.style.width = progress + '%';
+
+      // Trigger confetti and sound on closing slide
+      if (slides[index].classList.contains('slide-closing')) {
+        triggerConfetti();
+        playSuccessSound();
+      }
+    }
+
+    // Confetti effect
+    function triggerConfetti() {
+      const container = document.getElementById('confettiContainer');
+      container.innerHTML = '';
+      const colors = ['#4CB848', '#2D6DB5', '#FFD700', '#FF6B6B', '#FFFFFF'];
+
+      for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+        const size = Math.random() * 10 + 5;
+        confetti.style.width = size + 'px';
+        confetti.style.height = size + 'px';
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        container.appendChild(confetti);
+      }
     }
 
     function nextSlide() {
