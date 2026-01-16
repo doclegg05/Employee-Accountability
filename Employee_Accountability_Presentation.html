@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Accountability</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #2D6DB5;
+      --accent: #4CB848;
+      --dark: #1E4A7D;
+      --light: #FFFFFF;
+      --muted: #EEF4FA;
+      --gray: #5A6A7A;
+      --red: #DC2626;
+      --green: #4CB848;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--dark);
+      color: var(--dark);
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    /* Layout */
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--primary);
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sidebar-title {
+      color: var(--accent);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+    }
+
+    .chapter-list {
+      list-style: none;
+      flex: 1;
+    }
+
+    .chapter-item {
+      margin-bottom: 0.25rem;
+    }
+
+    .chapter-header {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .chapter-header:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--light);
+    }
+
+    .chapter-item.active > .chapter-header {
+      background: rgba(76,184,72,0.2);
+      color: var(--light);
+      border-left-color: var(--accent);
+    }
+
+    .chapter-arrow {
+      font-size: 0.7rem;
+      transition: transform 0.3s ease;
+    }
+
+    .chapter-item.expanded .chapter-arrow {
+      transform: rotate(90deg);
+    }
+
+    .slide-list {
+      list-style: none;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      padding-left: 1rem;
+    }
+
+    .chapter-item.expanded .slide-list {
+      max-height: 500px;
+    }
+
+    .slide-item {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.85rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .slide-item:hover {
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.8);
+    }
+
+    .slide-item.active {
+      background: rgba(76,184,72,0.3);
+      color: var(--light);
+    }
+
+    .slide-counter {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.875rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Resources Section */
+    .resources-section {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .resources-title {
+      color: var(--accent);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 0.75rem;
+    }
+
+    .resource-link {
+      display: block;
+      padding: 0.5rem 0.75rem;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.8rem;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      margin-bottom: 0.25rem;
+    }
+
+    .resource-link:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--light);
+    }
+
+    .resource-link::before {
+      content: "↓ ";
+      opacity: 0.6;
+    }
+
+    /* Download Button (for slides) */
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: var(--light);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      margin-top: 1.5rem;
+    }
+
+    .download-btn:hover {
+      background: #3da33d;
+      transform: translateY(-2px);
+    }
+
+    .download-btn::before {
+      content: "↓";
+      font-size: 1.2rem;
+    }
+
+    /* Download Resource Container */
+    .download-resource {
+      position: absolute;
+      right: 3rem;
+      bottom: 5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .download-prompt {
+      font-size: 0.85rem;
+      color: var(--gray);
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .download-prompt::before {
+      content: "📋";
+      font-style: normal;
+    }
+
+    .download-resource .download-btn {
+      margin-top: 0;
+      font-size: 0.95rem;
+      padding: 0.6rem 1.2rem;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--light);
+      position: relative;
+    }
+
+    /* Branding Logo (appears on all slides) */
+    .branding-logo {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      max-width: 80px;
+      height: auto;
+      opacity: 1;
+      z-index: 100;
+      padding: 0.5rem;
+      border-radius: 6px;
+      background: var(--light);
+    }
+
+    /* Slides */
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 4rem 5rem;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Title Slide */
+    .slide-title {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary) 0%, #1E4A7D 100%);
+    }
+
+    .slide-title h1 {
+      font-size: 5rem;
+      color: var(--light);
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+    }
+
+    .slide-title .subtitle {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 3rem;
+    }
+
+    .slide-title .divider {
+      width: 120px;
+      height: 5px;
+      background: var(--accent);
+      margin-bottom: 2rem;
+    }
+
+    .slide-title .logo {
+      max-width: 280px;
+      height: auto;
+      margin-bottom: 2rem;
+      background: var(--light);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    /* Content Slides */
+    .slide h2 {
+      font-size: 3.5rem;
+      color: var(--primary);
+      margin-bottom: 3rem;
+    }
+
+    .slide h3 {
+      font-size: 2.5rem;
+      color: var(--dark);
+      margin-bottom: 2rem;
+    }
+
+    .slide p {
+      font-size: 2rem;
+      line-height: 1.6;
+      color: var(--gray);
+    }
+
+    .slide .highlight {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .slide .accent {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* Comparison Layout */
+    .comparison {
+      display: flex;
+      gap: 4rem;
+      flex: 1;
+      align-items: center;
+    }
+
+    .comparison-box {
+      flex: 1;
+      padding: 3rem;
+      border-radius: 16px;
+      text-align: center;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .comparison-box.left {
+      background: var(--muted);
+      border: 3px solid #E5E7EB;
+    }
+
+    .comparison-box.right {
+      background: var(--primary);
+      color: var(--light);
+    }
+
+    .comparison-box h3 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .comparison-box.right h3 {
+      color: var(--accent);
+    }
+
+    .comparison-box .big-word {
+      font-size: 4rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .comparison-box.right .big-word {
+      color: var(--light);
+    }
+
+    .comparison-box p {
+      font-size: 1.5rem;
+    }
+
+    .comparison-box.right p {
+      color: rgba(255,255,255,0.8);
+    }
+
+    .arrow-between {
+      font-size: 4rem;
+      color: var(--accent);
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      flex: 1;
+    }
+
+    .card {
+      background: var(--muted);
+      padding: 2.5rem;
+      border-radius: 12px;
+      border-left: 6px solid var(--accent);
+    }
+
+    .card h4 {
+      font-size: 1.75rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .card p {
+      font-size: 1.5rem;
+      color: var(--gray);
+    }
+
+    /* 5 Cs Layout */
+    .five-cs {
+      display: flex;
+      gap: 1.5rem;
+      flex: 1;
+      align-items: center;
+    }
+
+    .c-card {
+      flex: 1;
+      background: var(--primary);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      color: var(--light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+    }
+
+    .c-circle {
+      width: 70px;
+      height: 70px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--light);
+      margin-bottom: 1.5rem;
+    }
+
+    .c-card h4 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .c-card p {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* Principles List */
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      flex: 1;
+    }
+
+    .principle-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+    }
+
+    .principle-num {
+      width: 60px;
+      height: 60px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--light);
+      flex-shrink: 0;
+    }
+
+    .principle-content h4 {
+      font-size: 1.75rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .principle-content p {
+      font-size: 1.25rem;
+    }
+
+    /* Victim vs Accountable */
+    .mindset-compare {
+      display: flex;
+      gap: 3rem;
+      flex: 1;
+    }
+
+    .mindset-box {
+      flex: 1;
+      padding: 2.5rem;
+      border-radius: 16px;
+    }
+
+    .mindset-box.victim {
+      background: #FEF2F2;
+      border: 3px solid #FECACA;
+    }
+
+    .mindset-box.accountable {
+      background: #ECFDF5;
+      border: 3px solid #A7F3D0;
+    }
+
+    .mindset-box h3 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .mindset-box.victim h3 {
+      color: var(--red);
+    }
+
+    .mindset-box.accountable h3 {
+      color: var(--green);
+    }
+
+    .mindset-box ul {
+      list-style: none;
+    }
+
+    .mindset-box li {
+      font-size: 1.5rem;
+      padding: 0.75rem 0;
+      padding-left: 2rem;
+      position: relative;
+    }
+
+    .mindset-box.victim li::before {
+      content: "✗";
+      position: absolute;
+      left: 0;
+      color: var(--red);
+      font-weight: bold;
+    }
+
+    .mindset-box.accountable li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    /* SMART Goals */
+    .smart-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .smart-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .smart-letter {
+      width: 50px;
+      height: 50px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--light);
+      flex-shrink: 0;
+    }
+
+    .smart-letter.alt {
+      background: var(--primary);
+    }
+
+    .smart-content {
+      flex: 1;
+      background: var(--muted);
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+    }
+
+    .smart-content h4 {
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: 0.1rem;
+    }
+
+    .smart-content p {
+      font-size: 1rem;
+    }
+
+    /* Three Areas */
+    .areas-grid {
+      display: flex;
+      gap: 2rem;
+      flex: 1;
+    }
+
+    .area-card {
+      flex: 1;
+      background: var(--primary);
+      border-radius: 16px;
+      padding: 2rem;
+      color: var(--light);
+    }
+
+    .area-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .area-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 auto 1rem;
+    }
+
+    .area-card h4 {
+      font-size: 1.5rem;
+    }
+
+    .area-card ul {
+      list-style: none;
+    }
+
+    .area-card li {
+      font-size: 1.25rem;
+      padding: 0.5rem 0;
+      color: rgba(255,255,255,0.85);
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .area-card li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    /* Big Statement */
+    .big-statement {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .big-statement h2 {
+      font-size: 4.5rem;
+      line-height: 1.3;
+      max-width: 900px;
+    }
+
+    .big-statement .icon-row {
+      display: flex;
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+
+    .big-statement .icon-box {
+      width: 100px;
+      height: 100px;
+      background: var(--muted);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    /* Key Takeaways */
+    .takeaways {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      flex: 1;
+    }
+
+    .takeaway-item {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .takeaway-num {
+      width: 50px;
+      height: 50px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--light);
+      flex-shrink: 0;
+    }
+
+    .takeaway-num.alt {
+      background: var(--primary);
+    }
+
+    .takeaway-item p {
+      font-size: 1.75rem;
+    }
+
+    /* Closing Slide */
+    .slide-closing {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary) 0%, #1E4A7D 100%);
+    }
+
+    .closing-box {
+      background: rgba(255,255,255,0.1);
+      padding: 4rem 5rem;
+      border-radius: 20px;
+      max-width: 800px;
+    }
+
+    .closing-box p {
+      font-size: 1.75rem;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.6;
+      font-style: italic;
+      margin-bottom: 2rem;
+    }
+
+    .closing-box .divider {
+      width: 80px;
+      height: 4px;
+      background: var(--accent);
+      margin: 0 auto 2rem;
+    }
+
+    .closing-box h2 {
+      font-size: 3.5rem;
+      color: var(--light);
+    }
+
+    /* Navigation Hint */
+    .nav-hint {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--gray);
+      font-size: 0.8rem;
+      background: rgba(255,255,255,0.9);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+    }
+
+    .key-icon {
+      background: var(--muted);
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-family: monospace;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .key-icon:hover {
+      background: var(--primary);
+      color: var(--light);
+    }
+
+    .key-icon:active {
+      transform: scale(0.95);
+    }
+
+    /* Section Slide */
+    .slide-section {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: var(--primary);
+    }
+
+    .slide-section .chapter-label {
+      font-size: 1.25rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 1.5rem;
+    }
+
+    .slide-section h2 {
+      font-size: 4rem;
+      color: var(--light);
+    }
+
+    .slide-section .divider {
+      width: 100px;
+      height: 5px;
+      background: var(--accent);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-title">Chapters</div>
+      <ul class="chapter-list" id="chapterList">
+        <!-- Dynamically populated -->
+      </ul>
+      <div class="resources-section">
+        <div class="resources-title">Resources</div>
+        <a href="resources/Employee Accountability Lesson Plan.pdf" target="_blank" class="resource-link">Lesson Plan</a>
+        <a href="resources/Employee Accountability Rubric.pdf" target="_blank" class="resource-link">Grading Rubric</a>
+        <a href="resources/Handout_1_Habits_of_Mind_Fillable.pdf" target="_blank" class="resource-link">Habits of Mind</a>
+        <a href="resources/Handout_2_Self_Reflection_Fillable.pdf" target="_blank" class="resource-link">Self-Reflection</a>
+        <a href="resources/Handout_3_Workplace_Scenarios_Fillable.v2.pdf" target="_blank" class="resource-link">Scenarios</a>
+        <a href="resources/Handout_4_SMART_Goal_Fillable.pdf" target="_blank" class="resource-link">SMART Goals</a>
+        <a href="resources/Handout_5_Career_Planning_Fillable.pdf" target="_blank" class="resource-link">Career Planning</a>
+      </div>
+      <div class="slide-counter">
+        Slide <span id="currentSlide">1</span> of <span id="totalSlides">22</span>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Slide 1: Title -->
+      <section class="slide slide-title active" data-chapter="1">
+        <img src="SPOKES-Logo.png" alt="SPOKES - Strategic Planning in Occupational Knowledge for Employment and Success - Skills for Life" class="logo">
+        <h1>Employee Accountability</h1>
+        <div class="divider"></div>
+        <p class="subtitle">Taking Ownership for Career Success</p>
+      </section>
+
+      <!-- Slide 2: Essential Questions -->
+      <section class="slide" data-chapter="1">
+        <h2>Essential Questions</h2>
+        <div class="takeaways">
+          <div class="takeaway-item">
+            <div class="takeaway-num">1</div>
+            <p>Are you accountable for your actions?</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">2</div>
+            <p>How do your Habits of Mind influence your accountability?</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">3</div>
+            <p>How do I move from victim thinking to accountable thinking?</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 3: Learning Objectives -->
+      <section class="slide" data-chapter="1">
+        <h2>Learning Objectives</h2>
+        <div class="takeaways">
+          <div class="takeaway-item">
+            <div class="takeaway-num">1</div>
+            <p>Define employee accountability and explain its importance</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">2</div>
+            <p>Identify Habits of Mind that support accountability</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">3</div>
+            <p>Explain benefits of accountability and recognize common barriers</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">4</div>
+            <p>Analyze workplace scenarios to identify accountability behaviors</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">5</div>
+            <p>Reflect on personal accountability and create a SMART goal action plan</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 4: Big Question -->
+      <section class="slide big-statement" data-chapter="1">
+        <h2>Are you <span class="accent">accountable</span> for your actions?</h2>
+      </section>
+
+      <!-- Slide 3: Section - What is Accountability -->
+      <section class="slide slide-section" data-chapter="2">
+        <p class="chapter-label">Chapter 1</p>
+        <h2>What is Accountability?</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 4: Responsibility vs Accountability -->
+      <section class="slide" data-chapter="2">
+        <h2>The Key Difference</h2>
+        <div class="comparison">
+          <div class="comparison-box left">
+            <h3>RESPONSIBILITY</h3>
+            <p class="big-word">Assigned</p>
+            <p>Tasks given to you</p>
+          </div>
+          <span class="arrow-between">→</span>
+          <div class="comparison-box right">
+            <h3>ACCOUNTABILITY</h3>
+            <p class="big-word">Ownership</p>
+            <p>Owning the outcome</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 5: Definition -->
+      <section class="slide big-statement" data-chapter="2">
+        <h2>No excuses.<br>No blame.<br><span class="accent">Solutions.</span></h2>
+      </section>
+
+      <!-- Slide 6: Why It Matters -->
+      <section class="slide" data-chapter="2">
+        <h2>Why Accountability Matters</h2>
+        <div class="cards-grid">
+          <div class="card">
+            <h4>Trust</h4>
+            <p>Builds credibility with managers and coworkers</p>
+          </div>
+          <div class="card">
+            <h4>Professionalism</h4>
+            <p>Demonstrates maturity and reliability</p>
+          </div>
+          <div class="card">
+            <h4>Opportunity</h4>
+            <p>Leads to promotions and leadership roles</p>
+          </div>
+          <div class="card">
+            <h4>Growth</h4>
+            <p>Enables continuous improvement</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 7: Section - Habits of Mind -->
+      <section class="slide slide-section" data-chapter="3">
+        <p class="chapter-label">Chapter 2</p>
+        <h2>Habits of Mind</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 8: Habits Quote -->
+      <section class="slide big-statement" data-chapter="3">
+        <h2>"What keeps us from being accountable isn't just what we <span class="highlight">do</span>—it's how we <span class="accent">think</span>."</h2>
+        <div class="download-resource">
+          <span class="download-prompt">Instructor Resource Available</span>
+          <a href="resources/Handout_1_Habits_of_Mind_Fillable.pdf" target="_blank" class="download-btn">Habits of Mind Worksheet</a>
+        </div>
+      </section>
+
+      <!-- Slide 9: Habits Attribution -->
+      <section class="slide" data-chapter="3">
+        <h2>Habits of Mind Framework</h2>
+        <div class="comparison">
+          <div class="comparison-box right" style="max-width: 700px;">
+            <h3>Developed by</h3>
+            <p class="big-word" style="font-size: 2.5rem;">Arthur Costa & Bena Kallick</p>
+            <p style="margin-top: 1rem;">Habits of Mind strengthen accountability by helping people make thoughtful choices, take responsibility for outcomes, and learn from experience.</p>
+          </div>
+        </div>
+        <div class="download-resource">
+          <span class="download-prompt">Instructor Resource Available</span>
+          <a href="resources/Handout_2_Self_Reflection_Fillable.pdf" target="_blank" class="download-btn">Self-Reflection Worksheet</a>
+        </div>
+      </section>
+
+      <!-- Slide 10: Habits Grid Part 1 -->
+      <section class="slide" data-chapter="3">
+        <h2>Key Habits of Mind</h2>
+        <div class="cards-grid">
+          <div class="card">
+            <h4>Persisting</h4>
+            <p>Sticking with a task even when it gets hard</p>
+          </div>
+          <div class="card">
+            <h4>Managing Impulsivity</h4>
+            <p>Pausing to think before acting or speaking</p>
+          </div>
+          <div class="card">
+            <h4>Listening with Empathy</h4>
+            <p>Paying attention to others before responding</p>
+          </div>
+          <div class="card">
+            <h4>Thinking Flexibly</h4>
+            <p>Considering multiple viewpoints; adapting</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 11: Habits Grid Part 2 -->
+      <section class="slide" data-chapter="3">
+        <h2>Key Habits of Mind</h2>
+        <div class="cards-grid">
+          <div class="card">
+            <h4>Striving for Accuracy</h4>
+            <p>Checking work carefully; maintaining high standards</p>
+          </div>
+          <div class="card">
+            <h4>Taking Responsible Risks</h4>
+            <p>Trying new things thoughtfully</p>
+          </div>
+          <div class="card">
+            <h4>Continuous Learning</h4>
+            <p>Reflecting, seeking feedback, and improving</p>
+          </div>
+          <div class="card">
+            <h4>The Connection</h4>
+            <p>How you think determines how you act</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 10: Section - 5 Cs -->
+      <section class="slide slide-section" data-chapter="4">
+        <p class="chapter-label">Chapter 3</p>
+        <h2>The 5 Cs Framework</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 11: 5 Cs -->
+      <section class="slide" data-chapter="4">
+        <h2>The 5 Cs of Accountability</h2>
+        <div class="five-cs">
+          <div class="c-card">
+            <div class="c-circle">C</div>
+            <h4>Clarity</h4>
+            <p>Setting clear, specific, understandable goals and expectations</p>
+          </div>
+          <div class="c-card">
+            <div class="c-circle">C</div>
+            <h4>Commitment</h4>
+            <p>Getting genuinely invested in your responsibilities</p>
+          </div>
+          <div class="c-card">
+            <div class="c-circle">C</div>
+            <h4>Communication</h4>
+            <p>Sharing expectations, progress, and feedback openly</p>
+          </div>
+          <div class="c-card">
+            <div class="c-circle">C</div>
+            <h4>Collaboration</h4>
+            <p>Working together; sharing accountability for outcomes</p>
+          </div>
+          <div class="c-card">
+            <div class="c-circle">C</div>
+            <h4>Consequences</h4>
+            <p>Recognizing actions have outcomes; follow-through matters</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 12: Section - 6 Principles -->
+      <section class="slide slide-section" data-chapter="5">
+        <p class="chapter-label">Chapter 4</p>
+        <h2>6 Principles of Personal Accountability</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 13: 6 Principles -->
+      <section class="slide" data-chapter="5">
+        <h2>6 Principles of Personal Accountability</h2>
+        <div class="principles-grid">
+          <div class="principle-item">
+            <div class="principle-num">1</div>
+            <div class="principle-content">
+              <h4>Practice Optimism</h4>
+              <p>Cultivate realistic hope through challenges</p>
+            </div>
+          </div>
+          <div class="principle-item">
+            <div class="principle-num">2</div>
+            <div class="principle-content">
+              <h4>Practice Self-Awareness</h4>
+              <p>See things as they really are; avoid blind spots</p>
+            </div>
+          </div>
+          <div class="principle-item">
+            <div class="principle-num">3</div>
+            <div class="principle-content">
+              <h4>Own Your Actions</h4>
+              <p>Take responsibility instead of playing victim</p>
+            </div>
+          </div>
+          <div class="principle-item">
+            <div class="principle-num">4</div>
+            <div class="principle-content">
+              <h4>Be Solution-Oriented</h4>
+              <p>Think creatively; ask for help when needed</p>
+            </div>
+          </div>
+          <div class="principle-item">
+            <div class="principle-num">5</div>
+            <div class="principle-content">
+              <h4>Change the Narrative</h4>
+              <p>Create a new path forward with facts, skills, and resources</p>
+            </div>
+          </div>
+          <div class="principle-item">
+            <div class="principle-num">6</div>
+            <div class="principle-content">
+              <h4>Supercharge Leadership</h4>
+              <p>Accept responsibility for your output</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 14: Section - Victim vs Accountable -->
+      <section class="slide slide-section" data-chapter="6">
+        <p class="chapter-label">Chapter 5</p>
+        <h2>Victim vs Accountable Mindset</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 15: Victim Side -->
+      <section class="slide" data-chapter="6">
+        <h2>Two Roads</h2>
+        <div class="mindset-compare">
+          <div class="mindset-box victim">
+            <h3>❌ Victim Road</h3>
+            <ul>
+              <li>Ignore the problem</li>
+              <li>Deny involvement</li>
+              <li>Blame someone else</li>
+              <li>Rationalize and justify</li>
+              <li>Resist getting involved</li>
+              <li>Hide to avoid it</li>
+            </ul>
+          </div>
+          <div class="mindset-box accountable">
+            <h3>✓ Accountable Road</h3>
+            <ul>
+              <li>Recognize and own it</li>
+              <li>Forgive yourself and others</li>
+              <li>Self-examine contribution</li>
+              <li>Learn what to do differently</li>
+              <li>Act on solutions</li>
+              <li>Grow from experience</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 16: Key Question -->
+      <section class="slide big-statement" data-chapter="6">
+        <h2>Not "how do I avoid it?"<br>but <span class="accent">"how fast can I get out?"</span></h2>
+      </section>
+
+      <!-- Slide 17: Section - Workplace -->
+      <section class="slide slide-section" data-chapter="7">
+        <p class="chapter-label">Chapter 6</p>
+        <h2>Workplace Application</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 18: Three Areas -->
+      <section class="slide" data-chapter="7">
+        <h2>Three Areas of Accountability</h2>
+        <div class="areas-grid">
+          <div class="area-card">
+            <div class="area-header">
+              <div class="area-icon">A</div>
+              <h4>Actions & Choices</h4>
+            </div>
+            <ul>
+              <li>How you communicate</li>
+              <li>How you spend time</li>
+              <li>Behavior and manners</li>
+              <li>Respect toward others</li>
+              <li>Attitude and thoughts</li>
+              <li>Response to challenges</li>
+            </ul>
+          </div>
+          <div class="area-card">
+            <div class="area-header">
+              <div class="area-icon">B</div>
+              <h4>Responsibilities</h4>
+            </div>
+            <ul>
+              <li>Being on time</li>
+              <li>Returning calls/emails timely</li>
+              <li>Keeping spaces clean</li>
+              <li>Living within means</li>
+              <li>Doing what you agreed to do</li>
+              <li>Executing job duties well</li>
+            </ul>
+          </div>
+          <div class="area-card">
+            <div class="area-header">
+              <div class="area-icon">C</div>
+              <h4>Goals</h4>
+            </div>
+            <ul>
+              <li>Career ambitions</li>
+              <li>Financial targets</li>
+              <li>Fitness/health goals</li>
+              <li>Family objectives</li>
+              <li>Personal development</li>
+              <li>Education plans</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 19: Scenario Introduction -->
+      <section class="slide big-statement" data-chapter="7">
+        <h2>Let's look at <span class="accent">two examples</span> from the workplace</h2>
+        <div class="download-resource">
+          <span class="download-prompt">Instructor Resource Available</span>
+          <a href="resources/Handout_3_Workplace_Scenarios_Fillable.v2.pdf" target="_blank" class="download-btn">Scenarios Worksheet</a>
+        </div>
+      </section>
+
+      <!-- Slide 20: Maria - Strong Accountability -->
+      <section class="slide" data-chapter="7">
+        <h2>Strong Accountability: Maria</h2>
+        <div class="mindset-box accountable" style="max-width: 100%;">
+          <h3>✓ Healthcare Setting</h3>
+          <ul>
+            <li>Verified medication discrepancy with pharmacy</li>
+            <li>Documented the call in patient chart</li>
+            <li>Helped unsteady resident to safety</li>
+            <li>Immediately reported unlocked cart mistake to supervisor</li>
+            <li>Helped newer nurse despite being busy</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Slide 21: Annette - Weak Accountability -->
+      <section class="slide" data-chapter="7">
+        <h2>Weak Accountability: Annette</h2>
+        <div class="mindset-box victim" style="max-width: 100%;">
+          <h3>❌ Healthcare Setting</h3>
+          <ul>
+            <li>Ignored CNA's alert about agitated resident</li>
+            <li>Did not document the situation</li>
+            <li>Blamed CNA when resident fell</li>
+            <li>Became defensive during review</li>
+            <li>Complained about understaffing</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Slide 22: Scenario Reflection -->
+      <section class="slide big-statement" data-chapter="7">
+        <h2>What <span class="highlight">habits of mind</span> did Maria demonstrate that Annette <span class="accent">did not</span>?</h2>
+      </section>
+
+      <!-- Slide 23: Section - SMART Goals -->
+      <section class="slide slide-section" data-chapter="8">
+        <p class="chapter-label">Chapter 7</p>
+        <h2>SMART Goals</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 20: SMART Framework -->
+      <section class="slide" data-chapter="8">
+        <h2>SMART Goals Framework</h2>
+        <div class="smart-stack">
+          <div class="smart-row">
+            <div class="smart-letter">S</div>
+            <div class="smart-content">
+              <h4>Specific</h4>
+              <p>What exactly will I do?</p>
+            </div>
+          </div>
+          <div class="smart-row">
+            <div class="smart-letter">M</div>
+            <div class="smart-content">
+              <h4>Measurable</h4>
+              <p>How will I track progress?</p>
+            </div>
+          </div>
+          <div class="smart-row">
+            <div class="smart-letter">A</div>
+            <div class="smart-content">
+              <h4>Achievable</h4>
+              <p>Is this realistic for me now?</p>
+            </div>
+          </div>
+          <div class="smart-row">
+            <div class="smart-letter">R</div>
+            <div class="smart-content">
+              <h4>Relevant</h4>
+              <p>Why is this important?</p>
+            </div>
+          </div>
+          <div class="smart-row">
+            <div class="smart-letter">T</div>
+            <div class="smart-content">
+              <h4>Time-bound</h4>
+              <p>What is my deadline?</p>
+            </div>
+          </div>
+        </div>
+        <div class="download-resource">
+          <span class="download-prompt">Instructor Resource Available</span>
+          <a href="resources/Handout_4_SMART_Goal_Fillable.pdf" target="_blank" class="download-btn">SMART Goals Worksheet</a>
+        </div>
+      </section>
+
+      <!-- Slide 21: Key Takeaways -->
+      <section class="slide" data-chapter="9">
+        <h2>Key Takeaways</h2>
+        <div class="takeaways">
+          <div class="takeaway-item">
+            <div class="takeaway-num">1</div>
+            <p><strong>Accountability is a choice</strong> — own outcomes, not blame</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">2</div>
+            <p><strong>Habits of Mind shape behavior</strong> — think before you act</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">3</div>
+            <p><strong>5 Cs create the framework</strong> — clarity to consequences</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">4</div>
+            <p><strong>Move victim → accountable</strong> — recognize, learn, act</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">5</div>
+            <p><strong>SMART goals track progress</strong> — be specific and time-bound</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">6</div>
+            <p><strong>Accountability = success</strong> — trust, credibility, opportunity</p>
+          </div>
+        </div>
+        <div class="download-resource">
+          <span class="download-prompt">Instructor Resource Available</span>
+          <a href="resources/Handout_5_Career_Planning_Fillable.pdf" target="_blank" class="download-btn">Career Planning Worksheet</a>
+        </div>
+      </section>
+
+      <!-- Slide 22: Closing -->
+      <section class="slide slide-closing" data-chapter="9">
+        <div class="closing-box">
+          <p>"When you're personally accountable, you take ownership of what happens as a result of your choices and actions."</p>
+          <div class="divider"></div>
+          <h2>Own Your Success</h2>
+        </div>
+      </section>
+
+      <!-- Navigation Hint -->
+      <div class="nav-hint">
+        <span class="key-icon" id="prevBtn" onclick="prevSlide()">←</span>
+        <span>to navigate</span>
+        <span class="key-icon" id="nextBtn" onclick="nextSlide()">→</span>
+      </div>
+
+      <!-- Branding Logo -->
+      <img src="SPOKES-Logo.png" alt="SPOKES" class="branding-logo">
+    </main>
+  </div>
+
+  <script>
+    // Slide Navigation
+    const slides = document.querySelectorAll('.slide');
+    const chapterListEl = document.getElementById('chapterList');
+    const currentSlideEl = document.getElementById('currentSlide');
+    const totalSlidesEl = document.getElementById('totalSlides');
+
+    let currentIndex = 0;
+    totalSlidesEl.textContent = slides.length;
+
+    // Chapter names mapping
+    const chapterNames = {
+      '1': 'Introduction',
+      '2': 'What is Accountability?',
+      '3': 'Habits of Mind',
+      '4': 'The 5 Cs Framework',
+      '5': '6 Principles',
+      '6': 'Victim vs Accountable',
+      '7': 'Workplace Application',
+      '8': 'SMART Goals',
+      '9': 'Key Takeaways'
+    };
+
+    // Build sidebar dynamically
+    function buildSidebar() {
+      const chapters = {};
+
+      // Group slides by chapter
+      slides.forEach((slide, index) => {
+        const chapter = slide.dataset.chapter;
+        if (!chapters[chapter]) {
+          chapters[chapter] = [];
+        }
+        // Get slide title from h1 or h2
+        const h1 = slide.querySelector('h1');
+        const h2 = slide.querySelector('h2');
+        let title = h1 ? h1.textContent : (h2 ? h2.textContent : `Slide ${index + 1}`);
+        // Clean up title (remove spans content duplication)
+        title = title.replace(/\s+/g, ' ').trim();
+        if (title.length > 30) title = title.substring(0, 30) + '...';
+
+        chapters[chapter].push({ index, title });
+      });
+
+      // Build HTML
+      let html = '';
+      Object.keys(chapters).forEach(chapterNum => {
+        const chapterSlides = chapters[chapterNum];
+        const chapterName = chapterNames[chapterNum] || `Chapter ${chapterNum}`;
+
+        html += `
+          <li class="chapter-item" data-chapter="${chapterNum}">
+            <div class="chapter-header">
+              <span class="chapter-arrow">▶</span>
+              <span>${chapterName}</span>
+            </div>
+            <ul class="slide-list">
+              ${chapterSlides.map(s => `
+                <li class="slide-item" data-slide="${s.index}">${s.title}</li>
+              `).join('')}
+            </ul>
+          </li>
+        `;
+      });
+
+      chapterListEl.innerHTML = html;
+
+      // Add click handlers
+      document.querySelectorAll('.chapter-header').forEach(header => {
+        header.addEventListener('click', (e) => {
+          const chapterItem = header.parentElement;
+          const wasExpanded = chapterItem.classList.contains('expanded');
+
+          // Collapse all chapters
+          document.querySelectorAll('.chapter-item').forEach(item => {
+            item.classList.remove('expanded');
+          });
+
+          // Toggle clicked chapter
+          if (!wasExpanded) {
+            chapterItem.classList.add('expanded');
+          }
+
+          // Navigate to first slide of chapter
+          const chapter = chapterItem.dataset.chapter;
+          const targetIndex = Array.from(slides).findIndex(
+            slide => slide.dataset.chapter === chapter
+          );
+          if (targetIndex !== -1) {
+            showSlide(targetIndex);
+          }
+        });
+      });
+
+      document.querySelectorAll('.slide-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const slideIndex = parseInt(item.dataset.slide);
+          showSlide(slideIndex);
+        });
+      });
+    }
+
+    function showSlide(index) {
+      // Bounds check
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
+
+      currentIndex = index;
+
+      // Update slides
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+      });
+
+      // Update chapter highlighting
+      const currentChapter = slides[index].dataset.chapter;
+      document.querySelectorAll('.chapter-item').forEach(item => {
+        const isActive = item.dataset.chapter === currentChapter;
+        item.classList.toggle('active', isActive);
+        if (isActive) {
+          item.classList.add('expanded');
+        }
+      });
+
+      // Update slide item highlighting
+      document.querySelectorAll('.slide-item').forEach(item => {
+        item.classList.toggle('active', parseInt(item.dataset.slide) === index);
+      });
+
+      // Update counter
+      currentSlideEl.textContent = index + 1;
+    }
+
+    function nextSlide() {
+      showSlide(currentIndex + 1);
+    }
+
+    function prevSlide() {
+      showSlide(currentIndex - 1);
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    // Touch/swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+    });
+
+    // Initialize
+    buildSidebar();
+    showSlide(0);
+  </script>
+</body>
+</html>
