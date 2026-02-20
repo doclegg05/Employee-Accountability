@@ -1,6 +1,6 @@
 # Python generation scripts
 generate_*.py
 
-# Root-level PDF copies
-Employee_Accountability_Lesson_Plan.pdf
-Employee_Accountability_Rubric_Fillable.pdf
+# Root-level PDF and DOCX files (only resources/ PDFs are tracked)
+/*.pdf
+/*.docx
